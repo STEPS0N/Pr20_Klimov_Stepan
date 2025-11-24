@@ -13,31 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ApplicationSettings_Klimov
+namespace ApplicationSettings_Klimov.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Логика взаимодействия для Settings.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Settings : Page
     {
-        public enum pages
-        {
-            setting
-        }
-
-        public void OpenPage(pages _pages)
-        {
-            if (_pages == pages.setting)
-            {
-                frame.Navigate(new Pages.Settings(this));
-            }
-        }
-        
-        public MainWindow()
+        public Settings(MainWindow mainWindow)
         {
             InitializeComponent();
-
-            OpenPage(pages.setting);
         }
     }
 }
