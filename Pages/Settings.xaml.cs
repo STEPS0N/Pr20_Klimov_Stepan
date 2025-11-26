@@ -24,6 +24,7 @@ namespace ApplicationSettings_Klimov.Pages
         public MainWindow mainWindow;
         OpenFileDialog openFileDialog = new OpenFileDialog();
         ColorDialog colorDialog = new ColorDialog();
+        FontDialog fontDialog = new FontDialog();
         
         public Settings(MainWindow _mainWindow)
         {
@@ -32,12 +33,16 @@ namespace ApplicationSettings_Klimov.Pages
             mainWindow = _mainWindow;
 
             openFileDialog.InitialDirectory = "c:\\";
-            openFileDialog.Filter = "Access files (*.accdb) | *.accdb | All files (*.*) | *.*";
+            openFileDialog.Filter = "Access files(*.accdb)|*.accdb|Config files(*.conf)|*.conf|Text files(*.txt)|*.txt|All files(*.*)|*.*";
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
 
             colorDialog.AllowFullOpen = true;
             colorDialog.ShowHelp = false;
+            colorDialog.FullOpen = true;
+
+            fontDialog.ShowColor = true;
+            fontDialog.ShowHelp = false;
         }
 
         private void OpenDataBase(object sender, RoutedEventArgs e)
@@ -45,6 +50,15 @@ namespace ApplicationSettings_Klimov.Pages
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 tb_database.Text = openFileDialog.FileName;
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+                saveFileDialog.Filter = "Config files(*.conf)|*.conf|Text files(*.txt)|*.txt|All files(*.*)|*.*";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = saveFileDialog.FileName;
+                }
             }
         }
 
@@ -73,12 +87,72 @@ namespace ApplicationSettings_Klimov.Pages
 
         private void SelectColorText(object sender, RoutedEventArgs e)
         {
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                System.Drawing.Color color = colorDialog.Color;
 
+                var textMus = new[]
+                {
+                    text1,
+                    text2,
+                    text3,
+                    text4,
+                    text5,
+                    text6,
+                    text7,
+                    gr_font
+                };
+
+                for (int i = 0; i < textMus.Length; i++)
+                {
+                    textMus[i].Foreground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
+                }
+
+                gr_text.Background = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
+            }
         }
 
         private void SelectFonts(object sender, RoutedEventArgs e)
         {
+            if (fontDialog.ShowDialog() == DialogResult.OK)
+            {
+                var fontMus = new[]
+                {
+                    text1,
+                    text2,
+                    text3,
+                    text4,
+                    text5,
+                    text6,
+                    text7,
+                    gr_font
+                };
 
+                for (int i = 0; i < fontMus.Length; i++)
+                {
+                    fontMus[i].FontFamily = new FontFamily(fontDialog.Font.FontFamily.Name);
+
+                    fontMus[i].FontSize = fontDialog.Font.Size;
+
+                    if (fontDialog.Font.Bold)
+                    {
+                        fontMus[i].FontWeight = FontWeights.Bold;
+                    }
+                    else
+                    {
+                        fontMus[i].FontWeight = FontWeights.Normal;
+                    }
+
+                    if (fontDialog.Font.Italic)
+                    {
+                        fontMus[i].FontStyle = FontStyles.Italic;
+                    }
+                    else
+                    {
+                        fontMus[i].FontStyle = FontStyles.Normal;
+                    }
+                }
+            }
         }
     }
 }
