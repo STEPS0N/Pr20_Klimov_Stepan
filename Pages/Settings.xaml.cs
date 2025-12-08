@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ApplicationSettings_Klimov;
+using System;
+using System.Drawing;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Color = System.Windows.Media.Color;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace ApplicationSettings_Klimov.Pages
 {
@@ -47,19 +43,46 @@ namespace ApplicationSettings_Klimov.Pages
 
         private void OpenDataBase(object sender, RoutedEventArgs e)
         {
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            saveFileDialog.Filter = "Config files(*.conf)|*.conf|Text files(*.txt)|*.txt|All files(*.*)|*.*";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                tb_database.Text = openFileDialog.FileName;
+                string fontName = gr_font.Content.ToString();
+                bool isBold = text1.FontWeight == FontWeights.Bold;
+                bool isItalic = text1.FontStyle == FontStyles.Italic;
+                double fontSize = text1.FontSize;
 
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-
-                saveFileDialog.Filter = "Config files(*.conf)|*.conf|Text files(*.txt)|*.txt|All files(*.*)|*.*";
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                string textColorStr = "0,0,0,255";
+                if (text1.Foreground is SolidColorBrush textBrush)
                 {
-                    string fileName = saveFileDialog.FileName;
+                    var c = textBrush.Color;
+                    textColorStr = $"{c.R},{c.G},{c.B},{c.A}";
                 }
+
+                string appColorStr = "0,0,0,255";
+                if (gr_application.Background is SolidColorBrush appBrush)
+                {
+                    var c = appBrush.Color;
+                    appColorStr = $"{c.R},{c.G},{c.B},{c.A}";
+                }
+
+                string[] mas =
+                {
+                    $"Шрифт: {fontName}",
+                    $"Жирный: {isBold}",
+                    $"Курсив: {isItalic}",
+                    $"Размер: {fontSize}",
+                    $"Разрешение: {(int)mainWindow.ActualWidth}x{(int)mainWindow.ActualHeight}",
+                    $"Цвет текста: {textColorStr}",
+                    $"Цвет приложения: {appColorStr}"
+        };
+
+                File.WriteAllText(saveFileDialog.FileName, string.Join("\n", mas));
             }
+
+            tb_database.Text = saveFileDialog.FileName;
         }
 
         private void SelectScreenResolution(object sender, SelectionChangedEventArgs e)
@@ -91,6 +114,15 @@ namespace ApplicationSettings_Klimov.Pages
             {
                 System.Drawing.Color color = colorDialog.Color;
 
+                var btn = new[]
+                {
+                    btn1,
+                    btn2,
+                    btn3,
+                    btn4,
+                    btn5
+                };
+
                 var textMus = new[]
                 {
                     text1,
@@ -108,6 +140,11 @@ namespace ApplicationSettings_Klimov.Pages
                     textMus[i].Foreground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
                 }
 
+                for (int j = 0; j < btn.Length; j++)
+                {
+                    btn[j].Foreground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
+                }
+
                 gr_text.Background = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
             }
         }
@@ -116,6 +153,15 @@ namespace ApplicationSettings_Klimov.Pages
         {
             if (fontDialog.ShowDialog() == DialogResult.OK)
             {
+                var btn = new[]
+                {
+                    btn1,
+                    btn2,
+                    btn3,
+                    btn4,
+                    btn5
+                };
+
                 var fontMus = new[]
                 {
                     text1,
@@ -152,7 +198,227 @@ namespace ApplicationSettings_Klimov.Pages
                         fontMus[i].FontStyle = FontStyles.Normal;
                     }
                 }
+
+                for (int j = 0; j < btn.Length; j++)
+                {
+                    btn[j].FontFamily = new FontFamily(fontDialog.Font.FontFamily.Name);
+
+                    btn[j].FontSize = fontDialog.Font.Size;
+
+                    if (fontDialog.Font.Bold)
+                    {
+                        btn[j].FontWeight = FontWeights.Bold;
+                    }
+                    else
+                    {
+                        btn[j].FontWeight = FontWeights.Normal;
+                    }
+
+                    if (fontDialog.Font.Italic)
+                    {
+                        btn[j].FontStyle = FontStyles.Italic;
+                    }
+                    else
+                    {
+                        btn[j].FontStyle = FontStyles.Normal;
+                    }
+                }
+            }
+
+            gr_font.Content = fontDialog.Font.Name;
+        }
+
+        private void ReadConf(object sender, RoutedEventArgs e)
+        {
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                StreamReader sr = new StreamReader(openFileDialog.FileName, Encoding.UTF8);
+
+                if (!sr.EndOfStream)
+                {
+                    var fontMus = new[]
+                    {
+                        text1,
+                        text2,
+                        text3,
+                        text4,
+                        text5,
+                        text6,
+                        text7,
+                        gr_font
+                    };
+
+                    var btn = new[]
+                    {
+                        btn1,
+                        btn2,
+                        btn3,
+                        btn4,
+                        btn5
+                    };
+
+                    while (!sr.EndOfStream)
+                    {
+                        string stroke = sr.ReadLine();
+
+                        if (stroke.Length == 0)
+                        {
+                            System.Windows.MessageBox.Show($"Файл пуст!");
+                            return;
+                        }
+
+                        string[] value = stroke.Split(new[] { ": " }, StringSplitOptions.None);
+                        if (value.Length == 2)
+                        {
+                            var name = value[0];
+                            var val = value[1];
+
+                            if (name == "Шрифт")
+                            {
+                                for (int i = 0; i < fontMus.Length; i++)
+                                {
+                                    fontMus[i].FontFamily = new FontFamily(val);
+                                }
+                                for (int j = 0; j < btn.Length; j++)
+                                {
+                                    btn[j].FontFamily = new FontFamily(val);
+                                }
+                            }
+                            else if (name == "Жирный")
+                            {
+                                if (val == "True")
+                                {
+                                    for (int i = 0; i < fontMus.Length; i++)
+                                    {
+                                        fontMus[i].FontWeight = FontWeights.Bold;
+                                    }
+                                    for (int j = 0; j < btn.Length; j++)
+                                    {
+                                        btn[j].FontWeight = FontWeights.Bold;
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < fontMus.Length; i++)
+                                    {
+                                        fontMus[i].FontWeight = FontWeights.Normal;
+                                    }
+                                    for (int j = 0; j < btn.Length; j++)
+                                    {
+                                        btn[j].FontWeight = FontWeights.Normal;
+                                    }
+                                }
+                            }
+                            else if (name == "Курсив")
+                            {
+                                if (val == "True")
+                                {
+                                    for (int i = 0; i < fontMus.Length; i++)
+                                    {
+                                        fontMus[i].FontStyle = FontStyles.Italic;
+                                    }
+                                    for (int j = 0; j < btn.Length; j++)
+                                    {
+                                        btn[j].FontStyle = FontStyles.Italic;
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < fontMus.Length; i++)
+                                    {
+                                        fontMus[i].FontStyle = FontStyles.Normal;
+                                    }
+                                    for (int j = 0; j < btn.Length; j++)
+                                    {
+                                        btn[j].FontStyle = FontStyles.Normal;
+                                    }
+                                }
+                            }
+                            else if (name == "Размер")
+                            {
+                                for (int i = 0; i < fontMus.Length; i++)
+                                {
+                                    fontMus[i].FontSize = Convert.ToDouble(val);
+                                }
+                                for (int j = 0; j < btn.Length; j++)
+                                {
+                                    btn[j].FontSize = Convert.ToDouble(val);
+                                }
+                            }
+                            else if (name == "Разрешение")
+                            {
+                                string[] parts = val.Split('x');
+                                if (parts.Length == 2)
+                                {
+                                    mainWindow.Width = int.Parse(parts[0]);
+                                    mainWindow.Height = int.Parse(parts[1]);
+                                }
+                            }
+                            else if (name == "Цвет текста")
+                            {
+                                try
+                                {
+                                    string[] rgb = val.Split(',');
+                                    if (rgb.Length >= 3)
+                                    {
+                                        byte r = byte.Parse(rgb[0]);
+                                        byte g = byte.Parse(rgb[1]);
+                                        byte b = byte.Parse(rgb[2]);
+                                        byte a = rgb.Length > 3 ? byte.Parse(rgb[3]) : (byte)255;
+
+                                        var colorBrush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
+
+                                        for (int i = 0; i < fontMus.Length; i++)
+                                        {
+                                            fontMus[i].Foreground = colorBrush;
+                                        }
+                                        for (int j = 0; j < btn.Length; j++)
+                                        {
+                                            btn[j].Foreground = colorBrush;
+                                        }
+                                        gr_text.Background = colorBrush;
+                                    }
+                                }
+                                catch { }
+                            }
+                            else if (name == "Цвет приложения")
+                            {
+                                try
+                                {
+                                    string[] rgb = val.Split(',');
+                                    if (rgb.Length >= 3)
+                                    {
+                                        byte r = byte.Parse(rgb[0]);
+                                        byte g = byte.Parse(rgb[1]);
+                                        byte b = byte.Parse(rgb[2]);
+                                        byte a = rgb.Length > 3 ? byte.Parse(rgb[3]) : (byte)255;
+
+                                        var brush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
+
+                                        gr_header.Background = brush;
+                                        gr_application.Background = brush;
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show($"Файл пуст!");
+                }
+                sr.Close();
             }
         }
     }
 }
+
+
+//$"Шрифт: {fontDialog.Font.FontFamily.Name}\n",
+//$"Жирный: {fontDialog.Font.Bold}\n",
+//$"Курсив: {fontDialog.Font.Italic}\n",
+//$"Размер: {fontDialog.Font.Size}\n",
+//$"Разрешение: {mainWindow.ActualWidth}x{mainWindow.ActualHeight}\n",
+//$"Цвет текста: {colorDialog.Color}\n",
+//$"Цвет приложения: {gr_application.Background}\n"

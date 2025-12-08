@@ -12,6 +12,7 @@
         <Grid x:Name="gr_header" Height="60" VerticalAlignment="Top" Background="Black">
             <Label x:Name="text1" Content="Настройки" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"
                    Foreground="White" FontWeight="Bold" FontSize="20"/>
+            <Button x:Name="btn1" Click="ReadConf" Content="Импорт" HorizontalAlignment="Right" VerticalAlignment="Center" Width="125" Height="25" Margin="20"/>
         </Grid>
 
         <Grid Margin="0,60,0,0">
@@ -19,7 +20,7 @@
                 <Grid>
                     <TextBox x:Name="tb_database" Height="23" Margin="9,19,135,9" TextWrapping="Wrap" Text=""
                              VerticalAlignment="Top"/>
-                    <Button Click="OpenDataBase" Content="Выбрать" HorizontalAlignment="Right" Margin="0,19,10,0"
+                    <Button x:Name="btn2" Click="OpenDataBase" Content="Выбрать" HorizontalAlignment="Right" Margin="0,19,10,0"
                             VerticalAlignment="Top" Width="120" Height="23"/>
                 </Grid>
             </Border>
@@ -27,7 +28,7 @@
                    Background="White"/>
             <Border BorderBrush="Black" BorderThickness="1" Height="45" Margin="10,96,10,0" VerticalAlignment="Top">
                 <Grid>
-                    <ComboBox SelectionChanged="SelectScreenResolution" Margin="10,10,10,0" VerticalAlignment="Top">
+                    <ComboBox x:Name="box" SelectionChanged="SelectScreenResolution" Margin="10,10,10,0" VerticalAlignment="Top">
                         <TextBlock>800x450</TextBlock>
                         <TextBlock>800x600</TextBlock>
                         <TextBlock>1024x768</TextBlock>
@@ -58,26 +59,26 @@
                                VerticalAlignment="Top"/>
                         <Grid x:Name="gr_application" Margin="127,10,0,0" Background="Black" Height="27"
                                VerticalAlignment="Top" HorizontalAlignment="Left" Width="49"/>
-                        <Button Click="SelectColorApplication" Content="Выбрать" HorizontalAlignment="Left"
+                        <Button x:Name="btn3" Click="SelectColorApplication" Content="Выбрать" HorizontalAlignment="Left"
                                Margin="182,10,0,0" VerticalAlignment="Top" Width="150" Height="26"/>
                     </Grid>
                     <Grid Margin="0,50,0,1">
                         <Label x:Name="text5" Content="Цвет текста: " HorizontalAlignment="Left" Margin="10,10,0,0"
                                VerticalAlignment="Top"/>
                         <Grid x:Name="gr_text" Margin="127,10,0,0" Background="Black" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="49"/>
-                        <Button Click="SelectColorText" Content="Выбрать" HorizontalAlignment="Left"
+                        <Button x:Name="btn4" Click="SelectColorText" Content="Выбрать" HorizontalAlignment="Left"
                                Margin="182,10,0,0" VerticalAlignment="Top" Width="150" Height="26"/>
                     </Grid>
                 </Grid>
             </Border>
             <Label x:Name="text6" Content="Цвета: " HorizontalAlignment="Left" Margin="20,146,0,0" VerticalAlignment="Top"
                    Background="White"/>
-            <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="63" Margin="10,277,0,0"
-                    VerticalAlignment="Top" Width="762">
+            <Border BorderBrush="Black" BorderThickness="1" Height="63" Margin="10,277,10,0"
+                    VerticalAlignment="Top">
                 <Grid>
                     <Label x:Name="gr_font" Content="Segoe UI" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"
                            Width="614"/>
-                    <Button Click="SelectFonts" Content="Выбрать" HorizontalAlignment="Left"
+                    <Button x:Name="btn5" Click="SelectFonts" Content="Выбрать" HorizontalAlignment="Left"
                            Margin="629,10,0,0" VerticalAlignment="Top" Width="121" Height="25"/>
                 </Grid>
             </Border>
